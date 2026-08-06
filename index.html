@@ -285,12 +285,12 @@
           <tr>
             <th style="width:55px;">#</th>
             <th>Patient Name</th>
-            <th>Address</th>
             <th class="remove-column" style="width:100px;">Remove</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
+      <datalist id="patientNameSuggestions"></datalist>
     </div>
 
     <div class="notes">
@@ -320,6 +320,89 @@
 
   <script>
     let deliveryType = "Wednesday Delivery";
+
+    const patientNames = [
+      "Memalia, Brian",
+      "Abraham, Annamma",
+      "Cabreu, Robertson",
+      "Denton",
+      "Houston",
+      "Mylie",
+      "Wilson, Rebecca",
+      "Wetzel, Shara",
+      "Duggan, Peggy",
+      "Sayed, Zahar",
+      "Khanwala, Yasmeen",
+      "Khanwala, Malik",
+      "Bhukrani, Zaheer",
+      "Bhukrani, Gulbano",
+      "Miller, Jenny",
+      "Miller, Joseph",
+      "Laine, Sharon",
+      "Bates, Dorothy",
+      "Philip, Ani",
+      "Richman, Harriet",
+      "Harris, Scott",
+      "Harris, Lee Ann",
+      "Stanley, Micheal",
+      "Yousuf, Roshan",
+      "Karramali, Noorali",
+      "Nelson, Betty",
+      "Seigel, Carolyn",
+      "Kim, David",
+      "Griffith, Howard",
+      "Rios Tavera, Jose",
+      "Cardenas, Guadalmina",
+      "Benitez, Elma",
+      "Bobbitt, Romeo",
+      "Wilson, Jimmy",
+      "Meador, Charles",
+      "Henry, Lee",
+      "Dawson, George",
+      "Franklin, Andee",
+      "Reed, Vera",
+      "Richlow, Bowie",
+      "Wilkins Jackson, Ava",
+      "Brown, Merced",
+      "Forton, Casey",
+      "Megason, Sally",
+      "Braton, Crighton",
+      "Luster, Clayton",
+      "Kester, Margret",
+      "Williams, Matt Uly",
+      "Lindsey, Terri",
+      "Daniel, Ottie",
+      "Stovall, Sandra",
+      "Parrish, Marylyn",
+      "Maddock, Mary",
+      "Shamlin, Johnny",
+      "Stone, Enola",
+      "Meade, Stephen",
+      "Forestborne, Chuck",
+      "Youngblood, Chuck",
+      "Cash, James",
+      "Flood, Gwen",
+      "Crisp, Dean",
+      "Whatley, Lind",
+      "Wood, Emmore",
+      "Chatsworth, Adline"
+    ];
+
+    function updatePatientSuggestions(input) {
+      const query = input.value.trim().toLowerCase();
+      const datalist = document.getElementById("patientNameSuggestions");
+      datalist.innerHTML = "";
+
+      if (query.length < 2) return;
+
+      patientNames
+        .filter(name => name.toLowerCase().split(/[\s,]+/).some(part => part.startsWith(query)))
+        .forEach(name => {
+          const option = document.createElement("option");
+          option.value = name;
+          datalist.appendChild(option);
+        });
+    }
 
     function getToday() {
       const today = new Date();
@@ -361,8 +444,7 @@
 
       row.innerHTML = `
         <td>${tbody.rows.length}</td>
-        <td><input type="text" placeholder="Enter patient name"></td>
-        <td><input type="text" placeholder="Address (optional)"></td>
+        <td><input type="text" list="patientNameSuggestions" placeholder="Enter patient name" oninput="updatePatientSuggestions(this)"></td>
         <td class="remove-column">
           <button class="remove" onclick="removeRow(this)">Remove</button>
         </td>
@@ -397,7 +479,6 @@
 
       for (let i = 0; i < rows.length; i++) {
         const name = rows[i].cells[1].querySelector("input").value.trim();
-        const address = rows[i].cells[2].querySelector("input").value.trim();
 
         if (!name) {
           alert(`Please enter the patient name in row ${i + 1}.`);
@@ -446,13 +527,12 @@
 
       const rows = [...document.querySelectorAll("#patientTable tbody tr")].map((row, index) => [
         index + 1,
-        row.cells[1].querySelector("input").value.trim(),
-        row.cells[2].querySelector("input").value.trim()
+        row.cells[1].querySelector("input").value.trim()
       ]);
 
       doc.autoTable({
         startY: 132,
-        head: [["#", "Patient Name", "Address"]],
+        head: [["#", "Patient Name"]],
         body: rows,
         theme: "grid",
         styles: {
@@ -468,8 +548,7 @@
         },
         columnStyles: {
           0: { cellWidth: 38 },
-          1: { cellWidth: 180 },
-          2: { cellWidth: 315 }
+          1: { cellWidth: 495 }
         },
         margin: { left: 40, right: 40 }
       });
